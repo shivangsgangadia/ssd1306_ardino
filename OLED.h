@@ -71,9 +71,14 @@ class OLED {
     */
     static void init();
 
+    /**
+     * Rows range from 0 - 7, and columns range from 0 - 127
+     */
     static void setCursor(int rowStart, int rowEnd, int columnStart, int columnEnd);
 
     static void writeString(char* str, int scaleFactor, int row, int column);
+
+    static void writeStringMultiLine(char* str, uint8_t scaleFactor, uint8_t row, uint8_t column);
 
     static void writeDisplayByte(char* byteArray, int scaleFactor, int row, int column);
 

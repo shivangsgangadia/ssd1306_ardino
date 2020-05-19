@@ -101,7 +101,7 @@ void OLED::writeString(char* str, int scaleFactor, int row, int column) {
       currentByte = pgm_read_word_near(font + j + charIndex);
       scale(currentByte, scaleFactor);
 
-      setCursor(row, rowMax, (column + (j * scaleFactor) + (i * 8 * scaleFactor)), columnMax);
+      OLED::setCursor(row, rowMax, (column + (j * scaleFactor) + (i * 8 * scaleFactor)), columnMax);
 
       // Working with verticle addressing mode
       for (uint8_t y = 0; y < scaleFactor; y++) {
@@ -119,6 +119,33 @@ void OLED::writeString(char* str, int scaleFactor, int row, int column) {
     }
   }
 }
+
+char oneLineBuffer[17];
+
+void OLED::writeStringMultiLine(char* str, uint8_t scaleFactor, uint8_t row, uint8_t column){
+	uint8_t totalLength = strlen(str);
+	uint8_t lineLength = ceil((128 - column) / (8 * scaleFactor));	
+
+	uint8_t bufferCounter = 0, currentRow = row, leftToWrite = totalLength;
+       	
+	uint8_t currentLineLength = (leftToWrite < lineLength) ? leftToWrite : lineLength;
+	for (uint8_t i = 0; i < totalLength; i++) {
+		oneLineBuffer[bufferCounter] = str[i];
+		bufferCounter++;
+		if (bufferCounter == currentLineLength){
+			oneLineBuffer[currentLineLength] = '\0';
+			OLED::writeString(oneLineBuffer, scaleFactor, currentRow, column);
+			bufferCounter = 0;
+			leftToWrite -= currentLineLength;
+			currentLineLength = (leftToWrite < lineLength) ? leftToWrite : lineLength;
+			currentRow += scaleFactor;
+			if(currentRow > 7){
+				currentRow = 0;
+			}
+		}
+	}
+}
+
 
 void OLED::writeDisplayByte(char* str, int scaleFactor, int row, int column) {
   stringLength = strlen(str);
